@@ -1,5 +1,5 @@
 const React = require('react');
-const SideMenu = require('react-native-simple-drawer');
+const SideMenu = require('./Menu');
 
 const {
     StyleSheet,
@@ -38,27 +38,32 @@ module.exports = class Basic extends Component {
             inputRange: [0, MENU_WIDTH * .8, MENU_WIDTH],
             outputRange: [0, 0, BAR_WIDTH],
         });
+        const opacity = this.state.animation.interpolate({
+            inputRange: [0, MENU_WIDTH * .8, MENU_WIDTH],
+            outputRange: [0, 0, 1],
+        });
         const menu = (
             <View style={{flex:1,flexDirection:'row'}}>
-                <View
-                    style={{elevation:25, padding:10,backgroundColor:'white',flex:1,marginLeft:-BAR_WIDTH,paddingLeft:BAR_WIDTH+10}}>
-                    <Text>react-native-simple-drawer</Text>
-                </View>
+
                 <Animated.View style={{elevation:5, width,backgroundColor:'#f1f1f1'}}>
                 </Animated.View>
+
+                <View
+                    style={{elevation:25, alignItems:'center', padding:10,backgroundColor:'white',flex:1,marginRight:-BAR_WIDTH,paddingRight:BAR_WIDTH+10}}>
+                    <Animated.Text style={{opacity,fontWeight:'bold'}}>react-native-simple-drawer</Animated.Text>
+                </View>
             </View>
         );
         return (
             <SideMenu
+                direction="right"
                 backdropStyle={{backgroundColor:'rgba(25,0,75,.5)'}}
                 ref="menu"
                 value={this.state.animation}
                 width={MENU_WIDTH}
                 menu={menu}>
                 <View style={styles.container}>
-                    <TouchableOpacity onPress={() => this.refs.menu.open()}>
-                        <Text style={styles.welcome}>Toggle Menu</Text>
-                    </TouchableOpacity>
+
                 </View>
             </SideMenu>
         );

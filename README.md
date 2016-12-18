@@ -5,6 +5,7 @@
 - menu: The menu component
 
 *** Optional Props (See ./example for usage) ***
+- direction: "left" or "right"
 - style: The style of the menu
 - width: The width of the menu
 - value: Optional ```Animated.Value(0)``` used to link animations inline with menu

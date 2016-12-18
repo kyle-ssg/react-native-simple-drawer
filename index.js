@@ -42,12 +42,17 @@ const Menu = class extends React.Component {
 
     render() {
         const {isVisible, pan} = this.state;
-        const {width, backdropStyle, style, children, menu} = this.props;
+        const {direction, width, backdropStyle, style, children, menu} = this.props;
 
-        const left = pan.interpolate({
-            inputRange: [0, this.props.width],
-            outputRange: [-width, 0],
-        });
+        const left = direction == 'left' ?
+            pan.interpolate({
+                inputRange: [0, this.props.width],
+                outputRange: [-width, 0],
+            }) :
+            pan.interpolate({
+                inputRange: [0, this.props.width],
+                outputRange: [deviceScreen.width, deviceScreen.width - width],
+            });
 
         const opacity = pan.interpolate({
             inputRange: [0, this.props.width],
@@ -96,15 +101,17 @@ const Menu = class extends React.Component {
             // When we drag/pan the object, set the delate to the states pan position
             onPanResponderMove: (e, gestureState) => {
                 const {dx} = gestureState;
-                const x = Math.min(Math.max(0 - this.state.pan._offset, dx), this.props.width - this.state.pan._offset);
+                const position = this.props.direction == 'left' ? dx : -dx;
+
+                const x = Math.min(Math.max(0 - this.state.pan._offset, position), this.props.width - this.state.pan._offset);
                 if (x !== this.state.pan._value)
                     this.state.pan.setValue(x);
             },
 
             onPanResponderRelease: (e, x) => {
                 this.state.pan.flattenOffset();
-
-                if (x.vx < 0) {
+                const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
+                if ( velocity < 0) {
                     this.close();
                 } else {
                     this.open();
@@ -122,6 +129,7 @@ Menu.propTypes = {
 }
 
 Menu.defaultProps = {
+    direction: 'left',
     value: new Animated.Value(0),
     width: deviceScreen.width * .66
 };
