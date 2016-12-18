@@ -1,5 +1,5 @@
 const React = require('react');
-const SideMenu = require('react-native-simple-drawer');
+const SideMenu = require('./Menu');
 
 const {
     StyleSheet,
@@ -32,19 +32,19 @@ module.exports = class Basic extends Component {
     }
 
     render() {
-        const DEVICE_WIDTH = Dimensions.get("window").width;
         const MENU_WIDTH = 250;
         const BAR_WIDTH = 44;
         const width = this.state.animation.interpolate({
-            inputRange: [0, DEVICE_WIDTH * .8, DEVICE_WIDTH],
-            outputRange: [0, 0, 44],
+            inputRange: [0, MENU_WIDTH * .8, MENU_WIDTH],
+            outputRange: [0, 0, BAR_WIDTH],
         });
         const menu = (
             <View style={{flex:1,flexDirection:'row'}}>
-                <View style={{elevation:25, padding:10,backgroundColor:'white',width:MENU_WIDTH-BAR_WIDTH}}>
+                <View
+                    style={{elevation:25, padding:10,backgroundColor:'white',flex:1,marginLeft:-BAR_WIDTH,paddingLeft:BAR_WIDTH+10}}>
                     <Text>react-native-simple-drawer</Text>
                 </View>
-                <Animated.View style={{elevation:16, width,backgroundColor:'#f1f1f1'}}>
+                <Animated.View style={{elevation:5, width,backgroundColor:'#f1f1f1'}}>
                 </Animated.View>
             </View>
         );

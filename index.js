@@ -4,7 +4,6 @@ const ReactNative = require('react-native');
 const React = require('react');
 const {Dimensions, StyleSheet, Animated, Easing} = ReactNative;
 const deviceScreen = Dimensions.get('window');
-const max = deviceScreen.width;
 
 const {
     PanResponder,
@@ -37,7 +36,7 @@ const Menu = class extends React.Component {
         Animated.timing(this.state.pan, {
             easing: Easing.inOut(Easing.ease),
             duration: 270,
-            toValue: max
+            toValue: this.props.width
         }).start();
     };
 
@@ -46,12 +45,12 @@ const Menu = class extends React.Component {
         const {width, backdropStyle, style, children, menu} = this.props;
 
         const left = pan.interpolate({
-            inputRange: [0, max],
+            inputRange: [0, this.props.width],
             outputRange: [-width, 0],
         });
 
         const opacity = pan.interpolate({
-            inputRange: [0, max],
+            inputRange: [0, this.props.width],
             outputRange: [0, 1.5],
         });
 
@@ -75,7 +74,7 @@ const Menu = class extends React.Component {
 
     onChange = (e)=> {
         console.log('change')
-        const val = e.value / max;
+        const val = e.value / this.props.width;
         const isVisible = val > 0;
         if (this.state.isVisible !== isVisible) {
             this.setState({isVisible});
@@ -97,7 +96,7 @@ const Menu = class extends React.Component {
             // When we drag/pan the object, set the delate to the states pan position
             onPanResponderMove: (e, gestureState) => {
                 const {dx} = gestureState;
-                const x = Math.min(Math.max(0 - this.state.pan._offset, dx), max - this.state.pan._offset);
+                const x = Math.min(Math.max(0 - this.state.pan._offset, dx), this.props.width - this.state.pan._offset);
                 if (x !== this.state.pan._value)
                     this.state.pan.setValue(x);
             },
