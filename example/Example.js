@@ -1,5 +1,5 @@
 const React = require('react');
-const SideMenu = require('./Menu');
+const SideMenu = require('react-native-simple-drawer');
 
 const {
     StyleSheet,
