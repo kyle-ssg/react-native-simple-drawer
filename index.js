@@ -16,7 +16,7 @@ const {
 const Menu = class extends React.Component {
     constructor(props) {
         super(props);
-        const pan = props.animatedValue;
+        const pan = props.value;
         this.state = {
             pan,
             value: new Animated.Value(0),
@@ -42,12 +42,12 @@ const Menu = class extends React.Component {
     };
 
     render() {
-        const {isVisible, value, pan} = this.state;
-        const {menuWidth, backdropStyle} = this.props;
+        const {isVisible, pan} = this.state;
+        const {width, backdropStyle, style, children, menu} = this.props;
 
         const left = pan.interpolate({
             inputRange: [0, max],
-            outputRange: [-menuWidth, 0],
+            outputRange: [-width, 0],
         });
 
         const opacity = pan.interpolate({
@@ -57,17 +57,17 @@ const Menu = class extends React.Component {
 
         return (
             <View style={styles.container} {...this._panResponder.panHandlers}>
-                {this.props.children}
+                {children}
                 {isVisible ? (
                     <TouchableWithoutFeedback onPress={this.close}>
-                        <Animated.View style={[styles.backdrop, {opacity}]}>
-                            <View style={{width:menuWidth}}>
+                        <Animated.View style={[styles.backdrop, {opacity}, backdropStyle]}>
+                            <View style={{width:width}}>
                             </View>
                         </Animated.View>
                     </TouchableWithoutFeedback>
                 ) : null}
-                <Animated.View style={[styles.menuStyle,  {left, width:menuWidth }]}>
-                    {this.props.menu}
+                <Animated.View style={[styles.menuStyle,  {left, width:width }, style]}>
+                    {menu}
                 </Animated.View>
             </View>
         );
@@ -77,7 +77,6 @@ const Menu = class extends React.Component {
         console.log('change')
         const val = e.value / max;
         const isVisible = val > 0;
-        this.props.onAnimationChange && this.props.onAnimationChange(val);
         if (this.state.isVisible !== isVisible) {
             this.setState({isVisible});
         }
@@ -116,9 +115,16 @@ const Menu = class extends React.Component {
     };
 };
 
+Menu.propTypes = {
+    menu: React.PropTypes.any,
+    style: React.PropTypes.any,
+    backdropStyle: React.PropTypes.any,
+    value: React.PropTypes.any,
+}
+
 Menu.defaultProps = {
-    animatedValue: new Animated.Value(0),
-    menuWidth: deviceScreen.width * .66
+    value: new Animated.Value(0),
+    width: deviceScreen.width * .66
 };
 
 
@@ -130,9 +136,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         width: 100,
-        backgroundColor: 'white',
-        shadowColor: 'black',
-        elevation: 16
+        backgroundColor: 'transparent'
     },
     backdrop: {
         position: 'absolute',

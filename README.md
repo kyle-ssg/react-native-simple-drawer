@@ -1,18 +1,20 @@
 
 <img src="./screen.gif"/>
 
-*** Props ***
+*** Required Props ***
 - menu: The menu component
-- onAnimationChange: callback with value from 0 to 1
-- menuWidth: The width of the menu
-- animatedValue: Optional ```Animated.Value(0)``` used to link animations inline with menu
+
+*** Optional Props (See ./example for usage) ***
+- style: The style of the menu
+- width: The width of the menu
+- value: Optional ```Animated.Value(0)``` used to link animations inline with menu
 
 *** Functions / util ***
 - ref.close()
 - ref.open()
 - ref.state.isVisible
 
-***Example***
+***Minimal Example***
 
 ```
 import SideMenu = from 'react-native-simple-drawer';
