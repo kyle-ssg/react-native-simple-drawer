@@ -5,6 +5,8 @@
 - menu: The menu component
 
 *** Optional Props (See ./example for usage) ***
+- disableGestures: disable swipe to show/hide
+- onChange:(isOpen)=>{}
 - direction: "left" or "right"
 - style: The style of the menu
 - width: The width of the menu

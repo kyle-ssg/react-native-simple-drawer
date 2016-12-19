@@ -24,6 +24,12 @@ const Menu = class extends React.Component {
         pan.addListener(this.onChange);
     }
 
+    componentWillUpdate(newProps, newState) {
+        if(newState.isVisible !== this.state.isVisible) {
+            newProps.onChange && newProps.onChange(newState.isVisible)
+        }
+    }
+
     close = () => {
         Animated.timing(this.state.pan, {
             easing: Easing.inOut(Easing.ease),
@@ -88,8 +94,8 @@ const Menu = class extends React.Component {
 
     componentWillMount() {
         this._panResponder = PanResponder.create({
-            onMoveShouldSetResponderCapture: () => true,
-            onMoveShouldSetPanResponderCapture: () => true,
+            onMoveShouldSetResponderCapture: () => !this.props.disableGestures,
+            onMoveShouldSetPanResponderCapture: () => !this.props.disableGestures,
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
@@ -111,10 +117,10 @@ const Menu = class extends React.Component {
             onPanResponderRelease: (e, x) => {
                 this.state.pan.flattenOffset();
                 const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
-                if ( velocity < 0) {
-                    this.close();
-                } else {
+                if (velocity > .5) {
                     this.open();
+                } else {
+                    this.close();
                 }
             }
         });
@@ -122,6 +128,8 @@ const Menu = class extends React.Component {
 };
 
 Menu.propTypes = {
+    disableGestures: React.PropTypes.any,
+    onChange: React.PropTypes.any,
     menu: React.PropTypes.any,
     style: React.PropTypes.any,
     backdropStyle: React.PropTypes.any,

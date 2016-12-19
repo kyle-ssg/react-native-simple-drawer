@@ -56,6 +56,7 @@ module.exports = class Basic extends Component {
         );
         return (
             <SideMenu
+                onChange={(isOpen)=>this.setState({isOpen})}
                 direction="right"
                 backdropStyle={{backgroundColor:'rgba(25,0,75,.5)'}}
                 ref="menu"
@@ -63,7 +64,7 @@ module.exports = class Basic extends Component {
                 width={MENU_WIDTH}
                 menu={menu}>
                 <View style={styles.container}>
-
+                    <Text>Menu is {this.state.isOpen?'Open':'Closed'}</Text>
                 </View>
             </SideMenu>
         );
