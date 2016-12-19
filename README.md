@@ -12,10 +12,9 @@
 - width: The width of the menu
 - value: Optional ```Animated.Value(0)``` used to link animations inline with menu
 
-*** Functions / util ***
+*** Functions ***
 - ref.close()
 - ref.open()
-- ref.state.isVisible
 
 ***Minimal Example***
 
