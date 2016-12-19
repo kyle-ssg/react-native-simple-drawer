@@ -46,6 +46,38 @@ const Menu = class extends React.Component {
         }).start();
     };
 
+    shouldAllowPan = (x,dx) => {
+
+        if (this.props.disableGestures)
+            return false;
+
+        if ((dx <10 && dx >10) || (dx < 10 && dx>-10)) {
+            return false;
+        }
+
+
+        var offset = this.props.targetOffset;
+        var direction = this.props.direction;
+        var width = this.props.width;
+        var isVisible = this.state.isVisible;
+
+
+        if (direction == 'left') {
+            if (isVisible) { //closing by swiping right
+                return x < width
+            } else {
+                return x <=  offset
+            }
+        } else {
+            if (isVisible) { //closing by swiping left
+                return deviceScreen.width - x > width
+            } else {
+                return deviceScreen.width - x <=  offset
+            }
+        }
+
+    }
+
     render() {
         const {isVisible, pan} = this.state;
         const {direction, width, backdropStyle, style, children, menu} = this.props;
@@ -84,7 +116,6 @@ const Menu = class extends React.Component {
     }
 
     onChange = (e)=> {
-        console.log('change')
         const val = e.value / this.props.width;
         const isVisible = val > 0;
         if (this.state.isVisible !== isVisible) {
@@ -94,8 +125,9 @@ const Menu = class extends React.Component {
 
     componentWillMount() {
         this._panResponder = PanResponder.create({
-            onMoveShouldSetResponderCapture: () => !this.props.disableGestures,
-            onMoveShouldSetPanResponderCapture: () => !this.props.disableGestures,
+            onMoveShouldSetResponderCapture: (e, gestureState) => false,
+            onMoveShouldSetPanResponderCapture: (e, gestureState) => this.shouldAllowPan(gestureState.moveX, gestureState.dx),
+            onPanResponderTerminationRequest: () => false,
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
@@ -117,7 +149,8 @@ const Menu = class extends React.Component {
             onPanResponderRelease: (e, x) => {
                 this.state.pan.flattenOffset();
                 const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
-                if (velocity > .5) {
+                const percent = (this.props.direction == 'left' ? x.dx : -x.dx) / this.props.width;
+                if (velocity > .5|| (velocity>0 && percent >.33)) {
                     this.open();
                 } else {
                     this.close();
@@ -137,6 +170,7 @@ Menu.propTypes = {
 }
 
 Menu.defaultProps = {
+    targetOffset: 44,
     direction: 'left',
     value: new Animated.Value(0),
     width: deviceScreen.width * .66

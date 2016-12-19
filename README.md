@@ -5,6 +5,7 @@
 - menu: The menu component
 
 *** Optional Props (See ./example for usage) ***
+- targetOffset: How far from the edge before responding to gestures
 - disableGestures: disable swipe to show/hide
 - onChange:(isOpen)=>{}
 - direction: "left" or "right"
