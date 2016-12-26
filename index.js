@@ -2,31 +2,44 @@
 
 const ReactNative = require('react-native');
 const React = require('react');
-const {Dimensions, StyleSheet, Animated, Easing} = ReactNative;
-const deviceScreen = Dimensions.get('window');
 
 const {
     PanResponder,
     View,
     TouchableWithoutFeedback,
+    TextInput,
+    Dimensions,
+    StyleSheet,
+    Animated,
+    Easing
 } = ReactNative;
 
+const deviceScreen = Dimensions.get('window');
+const { State: TextInputState } = TextInput;
+
+const dismissKeyboard = function () {
+    const input = TextInputState.currentlyFocusedField();
+    input && TextInputState.blurTextInput(input);
+};
 
 const Menu = class extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
         const pan = props.value;
         this.state = {
             pan,
             value: new Animated.Value(0),
             isVisible: false
-        };   // if ()
+        };
         pan.addListener(this.onChange);
     }
 
-    componentWillUpdate(newProps, newState) {
-        if(newState.isVisible !== this.state.isVisible) {
+    componentWillUpdate (newProps, newState) {
+        if (newState.isVisible !== this.state.isVisible) {
             newProps.onChange && newProps.onChange(newState.isVisible)
+        }
+        if (newState.isVisible) {
+            dismissKeyboard();
         }
     }
 
@@ -46,12 +59,12 @@ const Menu = class extends React.Component {
         }).start();
     };
 
-    shouldAllowPan = (x,dx) => {
+    shouldAllowPan = (x, dx) => {
 
         if (this.props.disableGestures)
             return false;
 
-        if ((dx <10 && dx >10) || (dx < 10 && dx>-10)) {
+        if ((dx < 10 && dx > 10) || (dx < 10 && dx > -10)) {
             return false;
         }
 
@@ -64,23 +77,23 @@ const Menu = class extends React.Component {
 
         if (direction == 'left') {
             if (isVisible) { //closing by swiping right
-                return x < width
+                return dx < 0
             } else {
-                return x <=  offset
+                return x <= offset
             }
         } else {
             if (isVisible) { //closing by swiping left
-                return deviceScreen.width - x > width
+                return dx > 0
             } else {
-                return deviceScreen.width - x <=  offset
+                return deviceScreen.width - x <= offset
             }
         }
 
     }
 
-    render() {
-        const {isVisible, pan} = this.state;
-        const {direction, width, backdropStyle, style, children, menu} = this.props;
+    render () {
+        const { isVisible, pan } = this.state;
+        const { direction, width, backdropStyle, style, children, menu } = this.props;
 
         const left = direction == 'left' ?
             pan.interpolate({
@@ -102,13 +115,13 @@ const Menu = class extends React.Component {
                 {children}
                 {isVisible ? (
                     <TouchableWithoutFeedback onPress={this.close}>
-                        <Animated.View style={[styles.backdrop, {opacity}, backdropStyle]}>
-                            <View style={{width:width}}>
+                        <Animated.View style={[styles.backdrop, { opacity }, backdropStyle]}>
+                            <View style={{ width: width }}>
                             </View>
                         </Animated.View>
                     </TouchableWithoutFeedback>
                 ) : null}
-                <Animated.View style={[styles.menuStyle,  {left, width:width }, style]}>
+                <Animated.View style={[styles.menuStyle, { left, width: width }, style]}>
                     {menu}
                 </Animated.View>
             </View>
@@ -119,11 +132,11 @@ const Menu = class extends React.Component {
         const val = e.value / this.props.width;
         const isVisible = val > 0;
         if (this.state.isVisible !== isVisible) {
-            this.setState({isVisible});
+            this.setState({ isVisible });
         }
     };
 
-    componentWillMount() {
+    componentWillMount () {
         this._panResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: (e, gestureState) => false,
             onMoveShouldSetPanResponderCapture: (e, gestureState) => this.shouldAllowPan(gestureState.moveX, gestureState.dx),
@@ -138,7 +151,7 @@ const Menu = class extends React.Component {
 
             // When we drag/pan the object, set the delate to the states pan position
             onPanResponderMove: (e, gestureState) => {
-                const {dx} = gestureState;
+                const { dx } = gestureState;
                 const position = this.props.direction == 'left' ? dx : -dx;
 
                 const x = Math.min(Math.max(0 - this.state.pan._offset, position), this.props.width - this.state.pan._offset);
@@ -148,9 +161,11 @@ const Menu = class extends React.Component {
 
             onPanResponderRelease: (e, x) => {
                 this.state.pan.flattenOffset();
+                console.log(JSON.stringify(this.state));
+                console.log(JSON.stringify(x));
                 const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
-                const percent = (this.props.direction == 'left' ? x.dx : -x.dx) / this.props.width;
-                if (velocity > .5|| (velocity>0 && percent >.33)) {
+                const percent = this.state.pan._value / this.props.width;
+                if (velocity > .5 || (velocity >= 0 && percent > .33)) {
                     this.open();
                 } else {
                     this.close();
@@ -178,7 +193,7 @@ Menu.defaultProps = {
 
 
 const styles = StyleSheet.create({
-    container: {flex: 1},
+    container: { flex: 1 },
     menuStyle: {
         position: 'absolute',
         top: 0,

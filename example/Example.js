@@ -3,11 +3,10 @@ const SideMenu = require('react-native-simple-drawer');
 
 const {
     StyleSheet,
-    Dimensions,
     Animated,
+    TextInput,
     Text,
     View,
-    TouchableOpacity,
 } = require('react-native');
 const {Component} = React;
 
@@ -65,6 +64,7 @@ module.exports = class Basic extends Component {
                 menu={menu}>
                 <View style={styles.container}>
                     <Text>Menu is {this.state.isOpen?'Open':'Closed'}</Text>
+                    <TextInput placeholder="Keyboard will hide" style={{height:44, width:100}}/>
                 </View>
             </SideMenu>
         );
