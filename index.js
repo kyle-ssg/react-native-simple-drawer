@@ -165,7 +165,7 @@ const Menu = class extends React.Component {
                 console.log(JSON.stringify(x));
                 const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
                 const percent = this.state.pan._value / this.props.width;
-                if (velocity > .5 || (velocity >= 0 && percent > .33)) {
+                if (velocity > .5 || (velocity >= 0 && percent > .33) || percent > 0.9) {
                     this.open();
                 } else {
                     this.close();
