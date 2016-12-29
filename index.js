@@ -144,9 +144,12 @@ const Menu = class extends React.Component {
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
-                // Set the initial value to the current state
-                this.state.pan.setOffset(this.state.pan._value);
-                this.state.pan.setValue(0);
+                if (!this.granted){
+                    this.granted = true;
+                    // Set the initial value to the current state
+                    this.state.pan.setOffset(this.state.pan._value);
+                    this.state.pan.setValue(0);
+                }
             },
 
             // When we drag/pan the object, set the delate to the states pan position
@@ -160,6 +163,7 @@ const Menu = class extends React.Component {
             },
 
             onPanResponderRelease: (e, x) => {
+                this.granted = false;
                 this.state.pan.flattenOffset();
                 console.log(JSON.stringify(this.state));
                 console.log(JSON.stringify(x));
