@@ -144,7 +144,7 @@ const Menu = class extends React.Component {
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
-                if (!this.granted){
+                if (!this.granted && !this.state.isVisible){
                     this.granted = true;
                     // Set the initial value to the current state
                     this.state.pan.setOffset(this.state.pan._value);
