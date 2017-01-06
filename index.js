@@ -144,22 +144,34 @@ const Menu = class extends React.Component {
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
-                if (!this.granted && !this.state.isVisible){
+                if (!this.granted){
                     this.granted = true;
                     // Set the initial value to the current state
                     this.state.pan.setOffset(this.state.pan._value);
                     this.state.pan.setValue(0);
+                    if (this.state.isVisible) {
+                        this.timer = setTimeout(() => {
+                          this.granted = false;
+                          this.timer = null;
+                          this.state.pan.setValue(this.props.width - this.state.pan._offset);
+                          this.state.pan.flattenOffset();
+                        }, 500);
+                    }
                 }
             },
 
             // When we drag/pan the object, set the delate to the states pan position
             onPanResponderMove: (e, gestureState) => {
+                if (this.timer) {
+                  clearTimeout(this.timer);
+                  this.timer = null;
+                }
                 const { dx } = gestureState;
                 const position = this.props.direction == 'left' ? dx : -dx;
 
                 const x = Math.min(Math.max(0 - this.state.pan._offset, position), this.props.width - this.state.pan._offset);
                 if (x !== this.state.pan._value)
-                    this.state.pan.setValue(x);
+                  this.state.pan.setValue(x);
             },
 
             onPanResponderRelease: (e, x) => {
@@ -170,9 +182,9 @@ const Menu = class extends React.Component {
                 const velocity = this.props.direction == 'left' ? x.vx : -x.vx;
                 const percent = this.state.pan._value / this.props.width;
                 if (velocity > .5 || (velocity >= 0 && percent > .33) || percent > 0.9) {
-                    this.open();
+                  this.open();
                 } else {
-                    this.close();
+                  this.close();
                 }
             }
         });
