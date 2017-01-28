@@ -18,8 +18,8 @@ const deviceScreen = Dimensions.get('window');
 const { State: TextInputState } = TextInput;
 
 const dismissKeyboard = function () {
-    const input = TextInputState.currentlyFocusedField();
-    input && TextInputState.blurTextInput(input);
+    // const input = TextInputState.currentlyFocusedField();
+    // input && TextInputState.blurTextInput(input);
 };
 
 const Menu = class extends React.Component {
@@ -44,11 +44,16 @@ const Menu = class extends React.Component {
     }
 
     close = () => {
-        Animated.timing(this.state.pan, {
-            easing: Easing.inOut(Easing.ease),
-            duration: 300,
-            toValue: 0
-        }).start();
+		if (this.state.isVisible) {
+			Animated.timing(this.state.pan, {
+				easing: Easing.inOut(Easing.ease),
+				duration: 300,
+				toValue: 0
+			}).start();
+		} else {
+
+		}
+
     };
 
     open = () => {
@@ -113,14 +118,12 @@ const Menu = class extends React.Component {
         return (
             <View style={styles.container} {...this._panResponder.panHandlers}>
                 {children}
-                {isVisible ? (
                     <TouchableWithoutFeedback onPress={this.close}>
-                        <Animated.View style={[styles.backdrop, { opacity }, backdropStyle]}>
+                        <Animated.View style={[styles.backdrop, { opacity }, backdropStyle, {position:this.state.isVisible?'absolute':'relative'}]}>
                             <View style={{ width: width }}>
                             </View>
                         </Animated.View>
                     </TouchableWithoutFeedback>
-                ) : null}
                 <Animated.View style={[styles.menuStyle, { left, width: width }, style]}>
                     {menu}
                 </Animated.View>
@@ -138,9 +141,9 @@ const Menu = class extends React.Component {
 
     componentWillMount () {
         this._panResponder = PanResponder.create({
-            onMoveShouldSetResponderCapture: (e, gestureState) => false,
-            onMoveShouldSetPanResponderCapture: (e, gestureState) => this.shouldAllowPan(gestureState.moveX, gestureState.dx),
-            onPanResponderTerminationRequest: () => false,
+            onMoveShouldSetResponder: (e, gestureState) => false,
+            onMoveShouldSetPanResponder: (e, gestureState) => this.shouldAllowPan(gestureState.moveX, gestureState.dx),
+            onPanResponderTerminationRequest: () => true,
 
             // Initially, set the value of x to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
@@ -157,7 +160,8 @@ const Menu = class extends React.Component {
                           this.state.pan.flattenOffset();
                         }, 500);
                     }
-                }
+                } else {
+				}
             },
 
             // When we drag/pan the object, set the delate to the states pan position
